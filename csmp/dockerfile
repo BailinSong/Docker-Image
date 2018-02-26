@@ -1,0 +1,18 @@
+#FROM blueline/alpine-openjre
+FROM openjdk:8-jre-alpine3.7
+#RUN groupadd -r  csmp && useradd -r -g csmp csmp
+RUN apk add --update --no-cache bash 
+RUN mkdir -p /opt/csmp/conf/ProcessNode
+
+COPY csmp.jar /opt/csmp/
+COPY start.sh /opt/csmp/
+COPY Null.xml /opt/csmp/conf/ProcessNode/
+COPY log4j2.xml /opt/csmp/conf/
+#USER csmp
+RUN rm -rf /var/cache/apk/*
+RUN chmod 777 /opt/csmp/start.sh
+ENV ClusterID=""
+ENV PATH /opt/csmp:$PATH
+WORKDIR /opt/csmp/
+ENTRYPOINT ["start.sh"]
+CMD [""]

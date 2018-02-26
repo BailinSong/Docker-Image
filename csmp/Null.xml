@@ -1,0 +1,12 @@
+<ProcessNode>
+        <ConfigClient class="com.ws.cedf.components.config.RedisConfigClient">
+                <Ip>Config</Ip>
+                <Port>6379</Port>
+                <Password></Password>
+        </ConfigClient>
+        <CommandChannel class="com.ws.cedf.components.command.RedisCommandChannel">
+                <Storage>CommandChannelRedis</Storage>
+                <ChannelName>CsmpCommandChannel</ChannelName>
+        </CommandChannel>
+        <Monitor class="com.ws.commons.utils.monitor.MonitorCollector"/>
+</ProcessNode>

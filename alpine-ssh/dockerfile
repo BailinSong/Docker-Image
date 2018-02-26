@@ -1,0 +1,15 @@
+FROM blueline/alpine
+MAINTAINER blueline
+RUN apk add --update --no-cache openssh-server \
+curl \
+bash \
+tree \
+tzdata \
+&& /etc/ssh/sshd_config\
+&& sed -i 's/^PermitRootLogin.*$/PermitRootLogin yes/g' /etc/ssh/sshd_config \
+&& mkdir /var/run/sshd\
+&& cp -r -f /usr/share/zoneinfo/Hongkong /etc/localtime \
+&& echo -ne "Alpine Linux 3.7 image. (`uname -rsv`)\n" >> /root/.built \
+&& rm -rf /var/cache/apk/*
+EXPOSE 22
+CMD ["/usr/sbin/sshd", "-D"]

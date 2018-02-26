@@ -1,0 +1,82 @@
+version: '2'
+services:
+  CsmpWeb:
+    image: blueline/csmpweb
+    hostname: CsmpWeb
+    stdin_open: true
+    tty: true
+    links:
+    - ConfigRedis:Config
+    - RuntimeRedis:Runtime
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.affinity:host_label: csmpwebservice=1
+  CsmpWebLB:
+    image: rancher/lb-service-haproxy:v0.7.15
+    ports:
+    - 80:80/tcp
+    - 8088:8088/tcp
+    labels:
+      io.rancher.scheduler.affinity:host_label: csmpwebservice=1
+      io.rancher.container.agent.role: environmentAdmin,agent
+      io.rancher.container.agent_service.drain_provider: 'true'
+      io.rancher.container.create_agent: 'true'
+  CsmpProcessNodes-AllInOne:
+    image: blueline/csmp
+    environment:
+      ClusterID: AllInOne
+    stdin_open: true
+    tty: true
+    links:
+    - ConfigRedis:Config
+    - RuntimeRedis:Runtime
+    labels:
+      io.rancher.scheduler.affinity:container_label_soft_ne: io.rancher.stack_service.name=csmp/csmpprocessnodesallinone
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.affinity:container_soft_ne: rancher
+  ConfigRedis:
+    image: redis:alpine
+    hostname: ConfigService
+    stdin_open: true
+    tty: true
+    ports:
+    - 6379:6379/tcp
+    command:
+    - redis-server
+    - --appendonly
+    - 'yes'
+    - --bind
+    - 0.0.0.0
+    - --protected-mode
+    - 'no'
+    - --dbfilename
+    - dump.rdb
+    - --appendfilename
+    - dump.aof
+    - --appendfsync
+    - everysec
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.affinity:host_label: configservice=1
+  RuntimeRedis:
+    image: redis:alpine
+    hostname: ConfigService
+    stdin_open: true
+    tty: true
+    command:
+    - redis-server
+    - --appendonly
+    - 'yes'
+    - --bind
+    - 0.0.0.0
+    - --protected-mode
+    - 'no'
+    - --dbfilename
+    - dump.rdb
+    - --appendfilename
+    - dump.aof
+    - --appendfsync
+    - everysec
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.affinity:host_label: configservice=1
